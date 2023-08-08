@@ -1,0 +1,89 @@
+name: Flutter CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - "**/*.md"
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        platform: [ubuntu-latest]
+        java-version: [17]
+        android-compile-sdk: [30]
+        android-build-tools: [33.0.2]
+        android-sdk-tools: [9477386]
+        flutter-version: ["3.10.6"]
+        channel: ["stable"]
+        arch: [x64]
+    runs-on: ${{ matrix.platform }}
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK ${{ matrix.java-version }}
+        uses: actions/setup-java@v3
+        with:
+          distribution: "zulu"
+          java-version: ${{ matrix.java-version }}
+
+      - name: Setup android SDK
+        run: |
+          apt-get update && apt-get install -y unzip wget
+          export ANDROID_HOME="${PWD}/android-home"
+          install -d $ANDROID_HOME
+          wget --output-document=$ANDROID_HOME/cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-${{matrix.android-sdk-tools}}_latest.zip
+          pushd $ANDROID_HOME
+          unzip -d cmdline-tools cmdline-tools.zip
+          rm cmdline-tools.zip
+          popd
+          export PATH=$PATH:${ANDROID_HOME}/cmdline-tools/cmdline-tools/bin/
+          sdkmanager --version
+          yes | sdkmanager --sdk_root=${ANDROID_HOME} --licenses || true
+          sdkmanager --sdk_root=${ANDROID_HOME} "platforms;android-${{matrix.android-compile-sdk}}"
+          sdkmanager --sdk_root=${ANDROID_HOME} "platform-tools"
+          sdkmanager --sdk_root=${ANDROID_HOME} "build-tools;${{matrix.android-build-tools}}"
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          channel: ${{ matrix.channel }}
+          architecture: ${{ matrix.arch }}
+
+      # Mark the flutter directory as safe.
+      - run: git config --global --add safe.directory /opt/hostedtoolcache/flutter/${{ matrix.channel }}-${{ matrix.flutter-version }}-${{ matrix.arch }}
+
+      # Print installed flutter version.
+      - run: flutter --version
+
+      # Get flutter dependencies.
+      - run: flutter pub get
+
+      # Check for any formatting issues in the code.
+      - run: dart format --set-exit-if-changed .
+
+      # Statically analyze the Dart code for any errors.
+      - run: flutter analyze .
+
+      # Run widget tests for our flutter project.
+      - run: flutter test
+
+      # Build apk.
+      - run: flutter build apk
+        env:
+          ANDROID_SDK_ROOT: ${{ github.workspace }}/android-home
+
+      # Upload generated apk to the artifacts.
+      - name: Upload apk to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: release-apk
+          path: build/app/outputs/apk/release/app-release.apk
