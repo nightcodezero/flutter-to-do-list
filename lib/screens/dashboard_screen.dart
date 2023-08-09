@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:todolist/models/todo.dart';
+import 'package:todolist/providers/go_router_provider.dart';
 import 'package:todolist/providers/todo_provider.dart';
+import 'package:todolist/screens/add_todo_screen.dart';
 import 'package:todolist/widgets/task_card.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
@@ -23,7 +24,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var todoList = ref.watch(todoProvider);
+    final todoList = ref.watch(todoProvider);
+    final router = ref.read(goRouterProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -58,12 +60,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          ref.read(todoProvider.notifier).insert(Todo(
-                title: 'New Task',
-                startDate: "26/08/2023",
-                endDate: "29/02/2023",
-                done: false,
-              ));
+          router.push(AddTodoScreen.path);
         },
         backgroundColor: Colors.red,
         shape: const CircleBorder(),
