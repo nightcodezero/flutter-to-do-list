@@ -28,12 +28,12 @@ class TodoNotifier extends StateNotifier<List<Todo>> {
       version: 1,
       onCreate: (Database db, int version) async {
         await db.execute('''
-          create table $Todo.tableTodo (
-            $Todo.columnId INTEGER PRIMARY KEY autoincrement,
-            $Todo.columnTitle TEXT NOT NULL,
-            $Todo.columnStartDate TEXT NOT NULL,
-            $Todo.columnEndDate TEXT NOT NULL,
-            $Todo.columnDone INTEGER NOT NULL)
+          CREATE TABLE ${Todo.tableTodo} (
+            ${Todo.columnId} INTEGER PRIMARY KEY autoincrement,
+            ${Todo.columnTitle} TEXT NOT NULL,
+            ${Todo.columnStartDate} TEXT NOT NULL,
+            ${Todo.columnEndDate} TEXT NOT NULL,
+            ${Todo.columnDone} INTEGER NOT NULL)
           ''');
       },
     );
@@ -66,8 +66,6 @@ class TodoNotifier extends StateNotifier<List<Todo>> {
   Future<Todo> insert(Todo todo) async {
     final db = await database;
     todo.id = await db.insert(Todo.tableTodo, todo.toMap());
-    print(todo.id);
-
     state = [...state, todo];
 
     return todo;
