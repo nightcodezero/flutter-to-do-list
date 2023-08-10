@@ -6,7 +6,9 @@ import 'package:todolist/providers/go_router_provider.dart';
 import 'package:todolist/providers/todo_provider.dart';
 
 class AddTodoScreen extends ConsumerStatefulWidget {
-  const AddTodoScreen({super.key});
+  final int? id;
+
+  const AddTodoScreen({super.key, this.id});
 
   static const path = '/add-todo';
 
@@ -20,15 +22,29 @@ class _AddTodoScreenState extends ConsumerState<AddTodoScreen> {
   final TextEditingController _endDate = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.id != null) {
+      ref.read(todoProvider.notifier).getById(widget.id!).then((value) {
+        _titleController.text = value.title;
+        _startDate.text = value.startDate;
+        _endDate.text = value.endDate;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final router = ref.read(goRouterProvider);
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: const Text('Add new To-Do List',
-            textAlign: TextAlign.left,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-            )),
+        title:
+            Text(widget.id == null ? 'Add new To-Do List' : 'Edit To-Do List',
+                textAlign: TextAlign.left,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                )),
         backgroundColor: Theme.of(context).primaryColor,
       ),
       body: SafeArea(
@@ -75,7 +91,9 @@ class _AddTodoScreenState extends ConsumerState<AddTodoScreen> {
                     onTap: () async {
                       DateTime? startPickedDate = await showDatePicker(
                           context: context,
-                          initialDate: DateTime.now(),
+                          initialDate: _startDate.text.isEmpty
+                              ? DateTime.now()
+                              : DateFormat('dd-MM-yyyy').parse(_startDate.text),
                           firstDate: DateTime.now(),
                           lastDate: DateTime(2100));
                       if (startPickedDate != null) {
@@ -109,20 +127,24 @@ class _AddTodoScreenState extends ConsumerState<AddTodoScreen> {
 
                         DateTime? endPickedDate = await showDatePicker(
                           context: context,
-                          initialDate: input.add(const Duration(days: 1)),
+                          initialDate: _endDate.text.isEmpty
+                              ? input.add(const Duration(days: 1))
+                              : DateFormat('dd-MM-yyyy').parse(_endDate.text),
                           firstDate: input.add(const Duration(days: 1)),
                           lastDate: DateTime(2100),
                         );
                         if (endPickedDate != null) {
-                          String formattedDate = DateFormat('dd-MM-yyyy')
-                              .format(endPickedDate.toUtc());
+                          String formattedDate =
+                              DateFormat('dd-MM-yyyy').format(endPickedDate);
                           setState(() {
                             _endDate.text = formattedDate;
                           });
                         }
                       } else {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text('You need to select Start Date')));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content:
+                                    Text('You need to select Start Date')));
                       }
                     },
                   ),
@@ -135,11 +157,21 @@ class _AddTodoScreenState extends ConsumerState<AddTodoScreen> {
                 padding: const EdgeInsets.all(0),
               ),
               onPressed: () {
-                ref.read(todoProvider.notifier).insert(Todo(
-                    title: _titleController.text,
-                    startDate: _startDate.text,
-                    endDate: _endDate.text,
-                    done: false));
+                if (widget.id != null) {
+                  ref.read(todoProvider.notifier).update(Todo(
+                      id: widget.id,
+                      title: _titleController.text.trim(),
+                      startDate: _startDate.text,
+                      endDate: _endDate.text,
+                      done: false));
+                } else {
+                  ref.read(todoProvider.notifier).create(Todo(
+                      title: _titleController.text.trim(),
+                      startDate: _startDate.text,
+                      endDate: _endDate.text,
+                      done: false));
+                }
+
                 router.pop();
               },
               child: Container(
@@ -148,10 +180,10 @@ class _AddTodoScreenState extends ConsumerState<AddTodoScreen> {
                 decoration: const BoxDecoration(
                   color: Colors.black,
                 ),
-                child: const Text(
+                child: Text(
+                  widget.id == null ? 'Create Now' : 'Save',
                   textAlign: TextAlign.center,
-                  'Create New',
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                   ),

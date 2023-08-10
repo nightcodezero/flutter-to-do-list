@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:todolist/providers/go_router_provider.dart';
@@ -16,10 +18,22 @@ class DashboardScreen extends ConsumerStatefulWidget {
 }
 
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
+  late Timer _timer;
+
   @override
   void initState() {
     super.initState();
     ref.read(todoProvider.notifier).getAll();
+
+    _timer = Timer.periodic(const Duration(seconds: 60), (timer) {
+      ref.read(todoProvider.notifier).getAll();
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
   }
 
   @override
@@ -46,8 +60,17 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                     padding: const EdgeInsets.all(16),
                     itemCount: todoList.length,
                     itemBuilder: (context, index) {
-                      return TaskCard(
-                        task: todoList.elementAt(index),
+                      return InkWell(
+                        onTap: () {
+                          router.push(Uri(
+                              path: AddTodoScreen.path,
+                              queryParameters: {
+                                'id': todoList[index].id.toString()
+                              }).toString());
+                        },
+                        child: TaskCard(
+                          task: todoList.elementAt(index),
+                        ),
                       );
                     },
                     separatorBuilder: (context, index) {
