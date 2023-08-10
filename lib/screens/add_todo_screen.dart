@@ -20,6 +20,7 @@ class _AddTodoScreenState extends ConsumerState<AddTodoScreen> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _startDate = TextEditingController();
   final TextEditingController _endDate = TextEditingController();
+  bool _isCompleted = false;
 
   @override
   void initState() {
@@ -29,6 +30,7 @@ class _AddTodoScreenState extends ConsumerState<AddTodoScreen> {
         _titleController.text = value.title;
         _startDate.text = value.startDate;
         _endDate.text = value.endDate;
+        _isCompleted = value.done;
       });
     }
   }
@@ -141,10 +143,7 @@ class _AddTodoScreenState extends ConsumerState<AddTodoScreen> {
                           });
                         }
                       } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content:
-                                    Text('You need to select Start Date')));
+                        showErrorMsg('You need to select Start Date first');
                       }
                     },
                   ),
@@ -157,13 +156,28 @@ class _AddTodoScreenState extends ConsumerState<AddTodoScreen> {
                 padding: const EdgeInsets.all(0),
               ),
               onPressed: () {
+                if (_titleController.text.trim().isEmpty) {
+                  showErrorMsg('You need to key in To-Do Title');
+                  return;
+                }
+
+                if (_startDate.text.isEmpty) {
+                  showErrorMsg('You need to select Start Date');
+                  return;
+                }
+
+                if (_endDate.text.isEmpty) {
+                  showErrorMsg('You need to select End Date');
+                  return;
+                }
+
                 if (widget.id != null) {
                   ref.read(todoProvider.notifier).update(Todo(
                       id: widget.id,
                       title: _titleController.text.trim(),
                       startDate: _startDate.text,
                       endDate: _endDate.text,
-                      done: false));
+                      done: _isCompleted));
                 } else {
                   ref.read(todoProvider.notifier).create(Todo(
                       title: _titleController.text.trim(),
@@ -192,5 +206,17 @@ class _AddTodoScreenState extends ConsumerState<AddTodoScreen> {
         ],
       )),
     );
+  }
+
+  void showErrorMsg(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: Colors.red,
+        content: Row(
+          children: [
+            const Icon(Icons.error_outline, color: Colors.white),
+            const SizedBox(width: 8),
+            Text(msg, style: const TextStyle(color: Colors.white)),
+          ],
+        )));
   }
 }
