@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:todolist/models/todo.dart';
 import 'package:todolist/providers/todo_provider.dart';
 
@@ -13,8 +14,19 @@ class TaskCard extends ConsumerStatefulWidget {
 }
 
 class _TaskCardState extends ConsumerState<TaskCard> {
+  String convertDate(String date) {
+    DateTime dateTime = DateFormat("dd-MM-yyyy").parse(date);
+    return DateFormat("yyyy-MM-dd").format(dateTime);
+  }
+
   @override
   Widget build(BuildContext context) {
+    DateTime startDateTime = DateTime.parse(convertDate(widget.task.startDate));
+    DateTime endDateTime = DateTime.parse(convertDate(widget.task.endDate));
+    Duration difference = endDateTime.difference(startDateTime);
+
+    int hours = difference.inHours;
+    int minutes = difference.inMinutes.remainder(60);
     return Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
@@ -79,7 +91,7 @@ class _TaskCardState extends ConsumerState<TaskCard> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            widget.task.endDate,
+                            "$hours hrs $minutes min",
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ],
