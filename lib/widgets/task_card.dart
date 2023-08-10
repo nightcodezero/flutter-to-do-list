@@ -21,12 +21,17 @@ class _TaskCardState extends ConsumerState<TaskCard> {
 
   @override
   Widget build(BuildContext context) {
-    DateTime startDateTime = DateTime.parse(convertDate(widget.task.startDate));
     DateTime endDateTime = DateTime.parse(convertDate(widget.task.endDate));
-    Duration difference = endDateTime.difference(startDateTime);
+    Duration difference = endDateTime.difference(DateTime.now());
 
     int hours = difference.inHours;
     int minutes = difference.inMinutes.remainder(60);
+
+    if (hours < 0 || minutes < 0) {
+      hours = 0;
+      minutes = 0;
+    }
+
     return Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
