@@ -52,6 +52,7 @@ jobs:
           sdkmanager --sdk_root=${ANDROID_HOME} "build-tools;${{matrix.android-build-tools}}"
           sdkmanager --sdk_root=${ANDROID_HOME} "system-images;android-${{matrix.android-compile-sdk}};google_apis_playstore;x86_64"
           echo "no" | avdmanager create avd -n test_emulator -k "system-images;android-${{matrix.android-compile-sdk}};google_apis_playstore;x86_64"
+          emulator -avd test_emulator -no-audio -no-window -no-boot-anim -accel on -gpu swiftshader_indirect &
 
       - name: Install Sqlite3
         run: |
@@ -81,12 +82,6 @@ jobs:
 
       # Run widget tests for our flutter project.
       - run: flutter test
-
-      - name: Set up emulator
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 33
-          script: ./gradlew connectedCheck
 
       # Run integration tests for our flutter project.
       - run: flutter test integration_test/
