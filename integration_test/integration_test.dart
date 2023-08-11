@@ -41,12 +41,18 @@ void main() {
     await tester.tap(todoTitle);
     await tester.pumpAndSettle();
 
-    await tester.enterText(title, 'Integration Test 2');
+    await tester.enterText(title, 'Update Integration Test');
     await tester.pumpAndSettle();
 
     await tester.tap(createButton);
     await tester.pumpAndSettle();
 
-    expect(find.text("Integration Test 2"), findsOneWidget);
+    expect(find.text("Update Integration Test"), findsOneWidget);
+
+    Finder checkbox = find.byKey(const Key('checkbox'));
+    await tester.tap(checkbox);
+    await tester.pumpAndSettle();
+
+    expect(find.text("Completed"), findsOneWidget);
   });
 }
