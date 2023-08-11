@@ -52,7 +52,9 @@ jobs:
           sdkmanager "platform-tools"
           sdkmanager "build-tools;${{matrix.android-build-tools}}"
           sdkmanager "system-images;android-${{matrix.android-compile-sdk}};google_apis_playstore;x86_64"
-          sdkmanager --install "emulator"
+          echo "no" | avdmanager create avd --force -n test_emulator -k "system-images;android-${{matrix.android-compile-sdk}};google_apis_playstore;x86_64"
+          sdkmanager "emulator"
+          sdkmanager --list
           emulator -list-avds
 
       - name: Linux - Install dependencies
