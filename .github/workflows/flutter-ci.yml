@@ -37,22 +37,23 @@ jobs:
       - name: Setup android SDK
         run: |
           apt-get update && apt-get install -y unzip wget
-          export ANDROID_HOME="${PWD}/android-home"
+
+          export ANDROID_HOME="${PWD}/android-sdk-root"
           install -d $ANDROID_HOME
-          wget --output-document=$ANDROID_HOME/cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-${{matrix.android-sdk-tools}}_latest.zip
-          pushd $ANDROID_HOME
-          unzip -d cmdline-tools cmdline-tools.zip
-          rm cmdline-tools.zip
-          popd
-          export PATH=$PATH:${ANDROID_HOME}/cmdline-tools/cmdline-tools/bin/
+          wget --no-verbose --output-document=$ANDROID_HOME/cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-${{matrix.android-sdk-tools}}_latest.zip
+          unzip -q -d "$ANDROID_HOME/cmdline-tools" "$ANDROID_HOME/cmdline-tools.zip"
+          mv -T "$ANDROID_HOME/cmdline-tools/cmdline-tools" "$ANDROID_HOME/cmdline-tools/tools"
+          export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/cmdline-tools/tools/bin
+
           sdkmanager --version
-          yes | sdkmanager --sdk_root=${ANDROID_HOME} --licenses || true
-          sdkmanager --sdk_root=${ANDROID_HOME} "platforms;android-${{matrix.android-compile-sdk}}"
-          sdkmanager --sdk_root=${ANDROID_HOME} "platform-tools"
-          sdkmanager --sdk_root=${ANDROID_HOME} "build-tools;${{matrix.android-build-tools}}"
-          sdkmanager --sdk_root=${ANDROID_HOME} "system-images;android-${{matrix.android-compile-sdk}};google_apis_playstore;x86_64"
-          sdkmanager --sdk_root=${ANDROID_HOME} --verbose emulator
-          sdkmanager --sdk_root=${ANDROID_HOME} --verbose --list
+
+          yes | sdkmanager --licenses > /dev/null || true
+          sdkmanager "platforms;android-${{matrix.android-compile-sdk}}"
+          sdkmanager "platform-tools"
+          sdkmanager "build-tools;${{matrix.android-build-tools}}"
+          sdkmanager "system-images;android-${{matrix.android-compile-sdk}};google_apis_playstore;x86_64"
+          sdkmanager emulator
+          sdkmanager --verbose --list
           emulator -list-avds
 
       - name: Linux - Install dependencies
