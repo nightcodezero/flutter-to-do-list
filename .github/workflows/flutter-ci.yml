@@ -76,6 +76,15 @@ jobs:
       # Run widget tests for our flutter project.
       - run: flutter test
 
+      - name: Set up emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          script: ./gradlew connectedCheck
+
+      # Run integration tests for our flutter project.
+      - run: flutter test integration_test/
+
       # Build apk.
       - run: flutter build apk
         env:
