@@ -14,7 +14,7 @@ jobs:
       matrix:
         platform: [self-hosted]
         java-version: [17]
-        android-compile-sdk: [30]
+        android-compile-sdk: [27]
         android-build-tools: [33.0.2]
         android-sdk-tools: [9477386]
         flutter-version: ["3.10.6"]
@@ -56,7 +56,7 @@ jobs:
           sdkmanager "emulator"
           echo "no" | avdmanager create avd --force -n test_emulator -k "system-images;android-${{matrix.android-compile-sdk}};google_apis;x86_64"
           $ANDROID_HOME/emulator/emulator -list-avds
-          $ANDROID_HOME/emulator/emulator -avd test_emulator -no-audio -no-window -no-boot-anim -accel on -gpu off &
+          $ANDROID_HOME/emulator/emulator -avd test_emulator -no-audio -no-window -no-boot-anim -accel on -gpu swiftshader_indirect &
 
       - name: Linux - Install dependencies
         if: runner.os == 'Linux'
