@@ -3,12 +3,12 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:todolist/models/todo.dart';
 
-final todoProvider = StateNotifierProvider<TodoNotifier, List<Todo>>(
-  (ref) => TodoNotifier(),
+final todoProvider = StateNotifierProvider<TodoListNotifier, List<Todo>>(
+  (ref) => TodoListNotifier(),
 );
 
-class TodoNotifier extends StateNotifier<List<Todo>> {
-  TodoNotifier() : super(const []);
+class TodoListNotifier extends StateNotifier<List<Todo>> {
+  TodoListNotifier() : super(const []);
 
   static Database? _database;
 
@@ -22,9 +22,10 @@ class TodoNotifier extends StateNotifier<List<Todo>> {
 
   Future<Database> initDB() async {
     var dbPath = await getDatabasesPath();
+    final path = join(dbPath, 'todo.db');
 
     return await openDatabase(
-      join(dbPath, 'todo.db'),
+      path,
       version: 1,
       onCreate: (Database db, int version) async {
         await db.execute('''
@@ -77,6 +78,8 @@ class TodoNotifier extends StateNotifier<List<Todo>> {
       where: '${Todo.columnId} = ?',
       whereArgs: [id],
     );
+
+    state = [Todo.fromMap(maps.first as Map<String, dynamic>)];
 
     if (maps.isEmpty) {
       return Todo(

@@ -67,6 +67,7 @@ class _AddTodoScreenState extends ConsumerState<AddTodoScreen> {
                     height: 5 * 24.0,
                     width: double.infinity,
                     child: TextField(
+                      key: const Key('title_field'),
                       controller: _titleController,
                       maxLines: 5,
                       keyboardType: TextInputType.multiline,
@@ -83,11 +84,12 @@ class _AddTodoScreenState extends ConsumerState<AddTodoScreen> {
                   ),
                   const SizedBox(height: 8),
                   TextFormField(
+                    key: const Key('start_date_field'),
                     controller: _startDate,
                     readOnly: true,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
-                      hintText: "Start Date",
+                      hintText: "Select a date",
                       suffixIcon: Icon(Icons.arrow_drop_down),
                     ),
                     onTap: () async {
@@ -114,11 +116,12 @@ class _AddTodoScreenState extends ConsumerState<AddTodoScreen> {
                   ),
                   const SizedBox(height: 8),
                   TextFormField(
+                    key: const Key('end_date_field'),
                     controller: _endDate,
                     readOnly: true,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
-                      hintText: "End Date",
+                      hintText: "Select a date",
                       suffixIcon: Icon(Icons.arrow_drop_down),
                     ),
                     onTap: () async {
@@ -152,6 +155,7 @@ class _AddTodoScreenState extends ConsumerState<AddTodoScreen> {
             ),
           ),
           TextButton(
+              key: const Key('create_button'),
               style: TextButton.styleFrom(
                 padding: const EdgeInsets.all(0),
               ),

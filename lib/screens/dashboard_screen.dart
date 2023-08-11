@@ -82,6 +82,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        key: const Key('add_todo_button'),
         onPressed: () {
           router.push(AddTodoScreen.path);
         },

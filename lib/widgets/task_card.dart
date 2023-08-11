@@ -135,6 +135,7 @@ class _TaskCardState extends ConsumerState<TaskCard> {
                     width: 24,
                     height: 24,
                     child: Checkbox(
+                      key: const Key('checkbox'),
                       value: widget.task.done,
                       onChanged: (value) {
                         ref
