@@ -50,6 +50,7 @@ jobs:
           sdkmanager --sdk_root=${ANDROID_HOME} "platforms;android-${{matrix.android-compile-sdk}}"
           sdkmanager --sdk_root=${ANDROID_HOME} "platform-tools"
           sdkmanager --sdk_root=${ANDROID_HOME} "build-tools;${{matrix.android-build-tools}}"
+          echo "no" | avdmanager --verbose create avd --force --name "emulator" --device "pixel" --package "system-images;android-${{matrix.android-compile-sdk}};default;x86_64" --tag "default" --abi "x86_64"
 
       - name: Install Sqlite3
         run: |
@@ -88,11 +89,6 @@ jobs:
 
       # Run integration tests for our flutter project.
       - run: flutter test integration_test/
-
-      # Build apk.
-      - run: flutter build apk
-        env:
-          ANDROID_SDK_ROOT: ${{ github.workspace }}/android-home
 
       # Upload generated apk to the artifacts.
       - name: Upload apk to artifacts
