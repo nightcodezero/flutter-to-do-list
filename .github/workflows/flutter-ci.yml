@@ -54,8 +54,8 @@ jobs:
           sdkmanager "system-images;android-${{matrix.android-compile-sdk}};google_apis_playstore;x86_64"
           echo "no" | avdmanager create avd --force -n test_emulator -k "system-images;android-${{matrix.android-compile-sdk}};google_apis_playstore;x86_64"
           sdkmanager "emulator"
-          sdkmanager --list
-          emulator -list-avds
+          sdkmanager --verbose --list
+          $ANDROID_HOME/emulator/emulator -list-avds
 
       - name: Linux - Install dependencies
         if: runner.os == 'Linux'
