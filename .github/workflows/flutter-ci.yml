@@ -51,7 +51,7 @@ jobs:
           sdkmanager --sdk_root=${ANDROID_HOME} "platform-tools"
           sdkmanager --sdk_root=${ANDROID_HOME} "build-tools;${{matrix.android-build-tools}}"
           sdkmanager --sdk_root=${ANDROID_HOME} "system-images;android-${{matrix.android-compile-sdk}};google_apis_playstore;x86_64"
-          avdmanager --sdk_root=${ANDROID_HOME} create avd -n test_emulator -k "system-images;android-${{matrix.android-compile-sdk}};google_apis_playstore;x86_64"
+          avdmanager create avd -n test_emulator -k "system-images;android-${{matrix.android-compile-sdk}};google_apis_playstore;x86_64"
 
       - name: Install Sqlite3
         run: |
