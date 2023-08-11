@@ -56,7 +56,7 @@ jobs:
           sdkmanager "emulator"
           echo "no" | avdmanager create avd --force -n test_emulator -k "system-images;android-${{matrix.android-compile-sdk}};google_apis;arm64-v8a"
           $ANDROID_HOME/emulator/emulator -list-avds
-          $ANDROID_HOME/emulator/emulator -avd test_emulator -no-audio -no-window -no-boot-anim -no-accel &
+          $ANDROID_HOME/emulator/emulator -avd test_emulator -no-audio -no-window -no-boot-anim -no-accel -gpu off &
 
       - name: Linux - Install dependencies
         if: runner.os == 'Linux'
