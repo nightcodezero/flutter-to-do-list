@@ -12,7 +12,7 @@ jobs:
   build:
     strategy:
       matrix:
-        platform: [ubuntu-latest]
+        platform: [self-hosted]
         java-version: [17]
         android-compile-sdk: [30]
         android-build-tools: [33.0.2]
@@ -79,7 +79,7 @@ jobs:
       - name: Set up emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 29
+          api-level: 33
           script: ./gradlew connectedCheck
 
       # Run integration tests for our flutter project.
