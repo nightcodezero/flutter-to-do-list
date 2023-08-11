@@ -56,6 +56,7 @@ jobs:
           sdkmanager "emulator"
           sdkmanager --verbose --list
           $ANDROID_HOME/emulator/emulator -list-avds
+          $ANDROID_HOME/emulator/emulator -avd test_emulator -no-audio -no-window -no-boot-anim -accel on -gpu swiftshader_indirect &
 
       - name: Linux - Install dependencies
         if: runner.os == 'Linux'
