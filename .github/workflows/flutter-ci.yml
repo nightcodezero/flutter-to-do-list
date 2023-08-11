@@ -50,7 +50,12 @@ jobs:
           sdkmanager --sdk_root=${ANDROID_HOME} "platforms;android-${{matrix.android-compile-sdk}}"
           sdkmanager --sdk_root=${ANDROID_HOME} "platform-tools"
           sdkmanager --sdk_root=${ANDROID_HOME} "build-tools;${{matrix.android-build-tools}}"
-          echo "no" | avdmanager --verbose create avd --force --name "emulator" --device "pixel" --package "system-images;android-${{matrix.android-compile-sdk}};default;x86_64" --tag "default" --abi "x86_64"
+
+      - name: Start Android Emulator
+        run: |
+          export ANDROID_SDK_ROOT=$ANDROID_HOME
+          avdmanager create avd -n test_emulator -k "system-images;android-${{matrix.android-compile-sdk}};google_apis_playstore;x86_64"
+          emulator -avd test_emulator -no-audio -no-window &
 
       - name: Install Sqlite3
         run: |
