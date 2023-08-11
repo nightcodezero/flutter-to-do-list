@@ -56,7 +56,7 @@ jobs:
 
       - name: Install Sqlite3
         run: |
-          sudo apt-get install sqlite3 libsqlite3-dev
+          sudo apt-get install sqlite3 libsqlite3-dev cmake
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -82,6 +82,9 @@ jobs:
 
       # Run widget tests for our flutter project.
       - run: flutter test
+
+      # List all the available devices.
+      - run: flutter devices
 
       # Run integration tests for our flutter project.
       - run: flutter test integration_test/
