@@ -7,9 +7,6 @@ on:
       - master
     paths-ignore:
       - "**/*.md"
-env:
-  ANDROID_HOME: ${{ github.workspace }}/android-sdk-root
-  PATH: ${{ github.workspace }}/android-sdk-root/cmdline-tools/latest/bin:$ANDROID_HOME/cmdline-tools/tools/bin:$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools:$PATH
 
 jobs:
   build:
@@ -24,6 +21,8 @@ jobs:
         channel: ["stable"]
         arch: [x64]
     runs-on: ${{ matrix.platform }}
+    env:
+      ANDROID_HOME: ${{ github.workspace }}/android-sdk-root
     timeout-minutes: 30
     steps:
       - name: Checkout repository
@@ -50,11 +49,15 @@ jobs:
 
           yes | sdkmanager --licenses > /dev/null || true
           sdkmanager "platforms;android-${{matrix.android-compile-sdk}}"
+          echo "$ANDROID_HOME/cmdline-tools/tools/bin" >> $GITHUB_PATH
           sdkmanager "platform-tools"
+          echo "$ANDROID_HOME/platform-tools" >> $GITHUB_PATH
           sdkmanager "build-tools;${{matrix.android-build-tools}}"
+          echo "$ANDROID_HOME/build-tools/${{matrix.android-build-tools}}" >> $GITHUB_PATH
           sdkmanager --list --verbose
           sdkmanager "system-images;android-${{matrix.android-compile-sdk}};google_apis;x86_64"
           sdkmanager "emulator"
+          echo "$ANDROID_HOME/emulator" >> $GITHUB_PATH
           echo "no" | avdmanager create avd --force -n test_emulator -k "system-images;android-${{matrix.android-compile-sdk}};google_apis;x86_64"
           emulator -list-avds
 
