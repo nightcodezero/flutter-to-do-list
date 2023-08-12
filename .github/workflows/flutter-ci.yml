@@ -57,12 +57,12 @@ jobs:
           echo "no" | avdmanager create avd --force -n test_emulator -k "system-images;android-${{matrix.android-compile-sdk}};google_apis;x86_64"
           $ANDROID_HOME/emulator/emulator -list-avds
           adb start-server
-          $ANDROID_HOME/emulator/emulator -avd test_emulator -no-audio -no-window -no-boot-anim -no-accel -gpu off &
+          $ANDROID_HOME/emulator/emulator -avd test_emulator -no-audio -no-window -no-boot-anim -accel on -gpu swiftshader_indirect &
 
       - name: Linux - Install dependencies
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get install -y sqlite3 libsqlite3-dev clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev
+          sudo apt-get install -y sqlite3 libsqlite3-dev clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-10-dev
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
