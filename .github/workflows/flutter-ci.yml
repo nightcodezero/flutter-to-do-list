@@ -7,6 +7,9 @@ on:
       - master
     paths-ignore:
       - "**/*.md"
+env:
+  ANDROID_HOME: ${{ github.workspace }}/android-sdk-root
+  PATH: ${{ github.workspace }}/android-sdk-root/cmdline-tools/latest/bin:$ANDROID_HOME/cmdline-tools/tools/bin:$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools:$PATH
 
 jobs:
   build:
@@ -21,9 +24,6 @@ jobs:
         channel: ["stable"]
         arch: [x64]
     runs-on: ${{ matrix.platform }}
-    env:
-      ANDROID_HOME: ${{ github.workspace }}/android-sdk-root
-      PATH: $ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/cmdline-tools/tools/bin:$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools:$PATH
     timeout-minutes: 30
     steps:
       - name: Checkout repository
