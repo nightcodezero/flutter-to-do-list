@@ -1,16 +1,68 @@
-# todolist
+# 📝 To Do List App
 
-A new Flutter project.
+The To-Do List App is a simple and intuitive mobile application designed 
+to help you manage your tasks and stay organized. Whether you're a busy professional, 
+a student, or just someone who wants to keep track of daily tasks, this app provides a 
+user-friendly interface and essential features to streamline your task management process.
 
-## Getting Started
+## ✨ Features
+✅ Task creation : Easily add new tasks with titles.
 
-This project is a starting point for a Flutter application.
+✅ Task deletion : Delete tasks that are no longer needed.
 
-A few resources to get you started if this is your first Flutter project:
+✅ Task completion : Mark tasks as complete when they are done.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+✅ Task editing : Edit tasks that need to be changed.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+⏳ Task sorting : Sort tasks by title, date, or completion status.
+
+## 📱 Screenshots
+
+
+## 📚 Libraries Used
+
+- [Flutter](https://flutter.dev/)
+- [Provider](https://pub.dev/packages/provider)
+- [Go Router](https://pub.dev/packages/go_router)
+- [Shared Preferences](https://pub.dev/packages/shared_preferences)
+- [Sqflite](https://pub.dev/packages/sqflite)
+- [Intl](https://pub.dev/packages/intl)
+- [Path](https://pub.dev/packages/path)
+- [Google Fonts](https://pub.dev/packages/google_fonts)
+
+## 🚀 Getting Started
+
+1. **Prerequisites**: Make sure you have Flutter and Dart installed on your system. If not, follow the installation instructions in the [Flutter documentation](https://docs.flutter.dev/get-started/install).
+2. **Clone repository**: Clone this repository to your local machine using the following command:
+   ```bash
+    git clone https://github.com/muhdfauzan93/flutter-to-do-list.git
+    ```
+3. **Navigate to Directory**: Change your working directory to the cloned repository:
+   ```bash
+    cd flutter-to-do-list
+    ```
+4. **Install dependencies**: Run the following command to install the required dependencies:
+   ```bash
+    flutter pub get
+    ```
+5. **Run the App**: Launch the app on an emulator or physical device using:
+   ```bash
+    flutter run
+    ```
+6. **Build the App**: Build the app for release using:
+    ```bash
+    flutter build apk
+    ```
+    or
+
+    ```bash
+    flutter build ios
+    ```
+7. **Run Unit Tests**: Run the tests using:
+    ```bash
+    flutter test
+    ```
+8. **Run Integration Tests**: Run the tests using:
+    ```bash
+    flutter test integration_test/
+    ```
