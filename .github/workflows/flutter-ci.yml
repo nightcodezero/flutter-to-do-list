@@ -40,16 +40,16 @@ jobs:
         timeout-minutes: 15
         run: |
           apt-get update && apt-get install -y unzip wget
+
+          echo "$ANDROID_HOME/cmdline-tools/tools/bin" >> $GITHUB_PATH
           install -d $ANDROID_HOME
           wget --no-verbose --output-document=$ANDROID_HOME/cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-${{matrix.android-sdk-tools}}_latest.zip
           unzip -q -d "$ANDROID_HOME/cmdline-tools" "$ANDROID_HOME/cmdline-tools.zip"
           mv -T "$ANDROID_HOME/cmdline-tools/cmdline-tools" "$ANDROID_HOME/cmdline-tools/tools"
 
           sdkmanager --version
-
           yes | sdkmanager --licenses > /dev/null || true
           sdkmanager "platforms;android-${{matrix.android-compile-sdk}}"
-          echo "$ANDROID_HOME/cmdline-tools/tools/bin" >> $GITHUB_PATH
           sdkmanager "platform-tools"
           echo "$ANDROID_HOME/platform-tools" >> $GITHUB_PATH
           sdkmanager "build-tools;${{matrix.android-build-tools}}"
