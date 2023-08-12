@@ -14,7 +14,7 @@ jobs:
       matrix:
         platform: [self-hosted]
         java-version: [17]
-        android-compile-sdk: [33]
+        android-compile-sdk: [30]
         android-build-tools: [33.0.2]
         android-sdk-tools: [9477386]
         flutter-version: ["3.10.6"]
@@ -51,6 +51,8 @@ jobs:
           sdkmanager "platforms;android-${{matrix.android-compile-sdk}}"
           sdkmanager "platform-tools"
           sdkmanager "build-tools;${{matrix.android-build-tools}}"
+          ls -la $ANDROID_HOME
+          ls -la $ANDROID_HOME/platform-tools
           sdkmanager --list --verbose
           sdkmanager "system-images;android-${{matrix.android-compile-sdk}};google_apis;x86_64"
           sdkmanager "emulator"
