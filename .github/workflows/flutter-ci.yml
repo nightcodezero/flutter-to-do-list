@@ -51,7 +51,7 @@ jobs:
           sdkmanager "platforms;android-${{matrix.android-compile-sdk}}"
           sdkmanager "platform-tools"
           sdkmanager "build-tools;${{matrix.android-build-tools}}"
-          sdkmanager --list
+          sdkmanager --list --verbose
           sdkmanager "system-images;android-${{matrix.android-compile-sdk}};google_apis;x86_64"
           sdkmanager "emulator"
           echo "no" | avdmanager create avd --force -n test_emulator -k "system-images;android-${{matrix.android-compile-sdk}};google_apis;x86_64"
