@@ -58,6 +58,7 @@ jobs:
           $ANDROID_HOME/emulator/emulator -list-avds
           adb start-server
           $ANDROID_HOME/emulator/emulator -avd test_emulator -no-audio -no-window -no-boot-anim -accel on -gpu swiftshader_indirect &
+          adb devices
 
       - name: Linux - Install dependencies
         if: runner.os == 'Linux'
