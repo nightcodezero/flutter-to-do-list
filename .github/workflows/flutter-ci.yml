@@ -42,6 +42,7 @@ jobs:
           apt-get update && apt-get install -y unzip wget
 
           echo "$ANDROID_HOME/cmdline-tools/tools/bin" >> $GITHUB_PATH
+          echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> $GITHUB_PATH
           install -d $ANDROID_HOME
           wget --no-verbose --output-document=$ANDROID_HOME/cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-${{matrix.android-sdk-tools}}_latest.zip
           unzip -q -d "$ANDROID_HOME/cmdline-tools" "$ANDROID_HOME/cmdline-tools.zip"
