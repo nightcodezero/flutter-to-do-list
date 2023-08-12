@@ -70,6 +70,7 @@ jobs:
           flutter-version: ${{ matrix.flutter-version }}
           channel: ${{ matrix.channel }}
           architecture: ${{ matrix.arch }}
+          cache: false
 
       # Mark the flutter directory as safe.
       - run: git config --global --add safe.directory /opt/hostedtoolcache/flutter/${{ matrix.channel }}-${{ matrix.flutter-version }}-${{ matrix.arch }}
