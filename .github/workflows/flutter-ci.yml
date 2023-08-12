@@ -17,7 +17,7 @@ jobs:
         android-compile-sdk: [30]
         android-build-tools: [33.0.2]
         android-sdk-tools: [9477386]
-        flutter-version: ["3.10.5"]
+        flutter-version: ["3.10.6"]
         channel: ["stable"]
         arch: [x64]
     runs-on: ${{ matrix.platform }}
