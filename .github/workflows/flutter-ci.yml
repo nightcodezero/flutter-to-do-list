@@ -55,10 +55,7 @@ jobs:
           sdkmanager --list --verbose
           sdkmanager "system-images;android-${{matrix.android-compile-sdk}};google_apis;x86_64"
           sdkmanager "emulator"
-          echo "no" | avdmanager create avd --force -n test_emulator -k "system-images;android-${{matrix.android-compile-sdk}};google_apis;x86_64"
-          $ANDROID_HOME/emulator/emulator -list-avds
-          $ANDROID_HOME/platform-tools/adb start-server
-          $ANDROID_HOME/emulator/emulator -avd test_emulator -no-audio -no-window -no-boot-anim -accel on -gpu swiftshader_indirect &
+          echo "no" | avdmanager create avd --force -n test_emulator -k "system-images;
 
       - name: Linux - Install dependencies
         if: runner.os == 'Linux'
@@ -95,7 +92,13 @@ jobs:
       - run: flutter devices
 
       # Run integration tests for our flutter project.
-      - run: flutter test integration_test/
+      - name: Run integration tests
+        run: |
+          android-${{matrix.android-compile-sdk}};google_apis;x86_64"
+          $ANDROID_HOME/emulator/emulator -list-avds
+          $ANDROID_HOME/platform-tools/adb start-server
+          $ANDROID_HOME/emulator/emulator -avd test_emulator -no-audio -no-window -no-boot-anim -accel on -gpu swiftshader_indirect &
+          flutter test integration_test/
 
       # Upload generated apk to the artifacts.
       - name: Upload apk to artifacts
