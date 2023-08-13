@@ -24,13 +24,16 @@ user-friendly interface and essential features to streamline your task managemen
 <table>
   <tr>
     <td>Main Screen</td>
-     <td>Add Task Screen</td>
+    <td>Add Task Screen</td>
+    <td>Edit Task Screen</td>
   </tr>
   <tr>
     <td><img src="https://github.com/muhdfauzan93/flutter-to-do-list/assets/10177288/6700dea8-ba7e-49bc-bc52-1721eeb4cb13" width=330 height=632></td>
+    <td><img src="https://github.com/muhdfauzan93/flutter-to-do-list/assets/10177288/46669aa6-9248-42ea-84ab-2c9d45f24e54" width=330 height=632></td>
     <td><img src="https://github.com/muhdfauzan93/flutter-to-do-list/assets/10177288/09b0d4d6-926a-432c-a28d-b211e100dc78" width=330p height=632></td>
   </tr>
 </table>
+![App Screenshot]()
 
 ## 📚 Libraries Used
 
