@@ -1,5 +1,8 @@
 # 📝 To Do List App
 
+[![made-with-Astro](https://img.shields.io/badge/Made%20with-Flutter-blue)](https://flutter.dev/)
+![CI](https://github.com/muhdfauzan93/flutter-to-do-list/actions/workflows/flutter-ci.yml/badge.svg)
+
 The To-Do List App is a simple and intuitive mobile application designed 
 to help you manage your tasks and stay organized. Whether you're a busy professional, 
 a student, or just someone who wants to keep track of daily tasks, this app provides a 
