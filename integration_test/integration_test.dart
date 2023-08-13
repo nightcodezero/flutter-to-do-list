@@ -5,7 +5,7 @@ import 'package:todolist/main.dart' as app;
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-  testWidgets('Add and edit to do list', (WidgetTester tester) async {
+  testWidgets('Add to do list', (WidgetTester tester) async {
     app.main();
     await tester.pumpAndSettle();
 
@@ -37,20 +37,38 @@ void main() {
 
     Finder todoTitle = find.text("Integration Test");
     expect(todoTitle, findsOneWidget);
+  });
+
+  testWidgets('Edit to do list', (WidgetTester tester) async {
+    app.main();
+    await tester.pumpAndSettle();
+
+    Finder todoTitle = find.text("Integration Test");
+    expect(todoTitle, findsOneWidget);
 
     await tester.tap(todoTitle);
     await tester.pumpAndSettle();
 
+    Finder title = find.byKey(const Key('title_field'));
     await tester.tap(title);
     await tester.pumpAndSettle();
 
     await tester.enterText(title, 'Update Integration Test');
     await tester.pumpAndSettle();
 
-    await tester.tap(createButton);
+    Finder saveButton = find.byKey(const Key('create_button'));
+    await tester.tap(saveButton);
     await tester.pumpAndSettle();
 
     expect(find.text("Update Integration Test"), findsOneWidget);
+  });
+
+  testWidgets('Tick task as completed', (WidgetTester tester) async {
+    app.main();
+    await tester.pumpAndSettle();
+
+    Finder todoTitle = find.text("Update Integration Test");
+    expect(todoTitle, findsOneWidget);
 
     Finder checkbox = find.byKey(const Key('checkbox'));
     await tester.tap(checkbox);
