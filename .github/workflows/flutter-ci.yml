@@ -21,6 +21,8 @@ jobs:
         channel: ["stable"]
         arch: [x64]
     runs-on: ${{ matrix.platform }}
+    env:
+      ANDROID_SDK_ROOT: ${{ github.workspace }}/android-sdk-root
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -70,12 +72,11 @@ jobs:
         run: |
           apt-get update && apt-get install -y unzip wget
 
-          export ANDROID_HOME="${PWD}/android-sdk-root"
-          install -d $ANDROID_HOME
-          wget --no-verbose --output-document=$ANDROID_HOME/cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-${{matrix.android-sdk-tools}}_latest.zip
-          unzip -q -d "$ANDROID_HOME/cmdline-tools" "$ANDROID_HOME/cmdline-tools.zip"
-          mv -T "$ANDROID_HOME/cmdline-tools/cmdline-tools" "$ANDROID_HOME/cmdline-tools/tools"
-          export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/cmdline-tools/tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator
+          install -d $ANDROID_SDK_ROOT
+          wget --no-verbose --output-document=$ANDROID_SDK_ROOT/cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-${{matrix.android-sdk-tools}}_latest.zip
+          unzip -q -d "$ANDROID_SDK_ROOT/cmdline-tools" "$ANDROID_SDK_ROOT/cmdline-tools.zip"
+          mv -T "$ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools" "$ANDROID_SDK_ROOT/cmdline-tools/tools"
+          export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/cmdline-tools/tools/bin:$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/emulator
 
           sdkmanager --version
 
@@ -94,12 +95,9 @@ jobs:
           echo "Emulator started successfully."
           flutter devices
           flutter test integration_test/ -d emulator-5554
-          yes | sdkmanager --licenses
 
       # Build apk.
       - run: flutter build apk
-        env:
-          ANDROID_SDK_ROOT: ${{ github.workspace }}/android-home
 
       # Upload generated apk to the artifacts.
       - name: Upload apk to artifacts
