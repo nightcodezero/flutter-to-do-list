@@ -93,7 +93,7 @@ jobs:
           emulator -avd test_emulator -skin 600x1024 -no-audio -no-window -no-boot-anim -accel on -gpu swiftshader_indirect -debug -all & adb wait-for-device
           echo "Emulator started successfully."
           flutter devices
-          flutter test integration_test/
+          flutter test integration_test/ -d emulator-5554
 
       # Build apk.
       - run: flutter build apk
