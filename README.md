@@ -32,9 +32,8 @@ user-friendly interface and essential features to streamline your task managemen
 ## 📚 Libraries Used
 
 - [Flutter](https://flutter.dev/)
-- [Provider](https://pub.dev/packages/provider)
 - [Go Router](https://pub.dev/packages/go_router)
-- [Shared Preferences](https://pub.dev/packages/shared_preferences)
+- [Riverpod](https://pub.dev/packages/riverpod)
 - [Sqflite](https://pub.dev/packages/sqflite)
 - [Intl](https://pub.dev/packages/intl)
 - [Path](https://pub.dev/packages/path)
