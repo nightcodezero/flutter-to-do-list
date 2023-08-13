@@ -55,8 +55,8 @@ void main() {
         endDate: "03/09/2023",
         done: false));
 
-    await notifier.getById(todo.id!);
-    expect(notifier.debugState.length, 1);
+    expect(notifier.debugState.firstWhere((element) => element.id == todo.id),
+        isNotNull);
   });
 
   test('Update to do list', () async {

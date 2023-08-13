@@ -26,12 +26,13 @@ class _AddTodoScreenState extends ConsumerState<AddTodoScreen> {
   void initState() {
     super.initState();
     if (widget.id != null) {
-      ref.read(todoProvider.notifier).getById(widget.id!).then((value) {
-        _titleController.text = value.title;
-        _startDate.text = value.startDate;
-        _endDate.text = value.endDate;
-        _isCompleted = value.done;
-      });
+      final todoList = ref.read(todoProvider);
+      final todo = todoList.firstWhere((element) => element.id == widget.id);
+
+      _titleController.text = todo.title;
+      _startDate.text = todo.startDate;
+      _endDate.text = todo.endDate;
+      _isCompleted = todo.done;
     }
   }
 
@@ -98,8 +99,10 @@ class _AddTodoScreenState extends ConsumerState<AddTodoScreen> {
                           initialDate: _startDate.text.isEmpty
                               ? DateTime.now()
                               : DateFormat('dd-MM-yyyy').parse(_startDate.text),
-                          firstDate: DateTime.now(),
-                          lastDate: DateTime(2100));
+                          firstDate: DateTime(DateTime.now().year, 1, 1),
+                          lastDate: _endDate.text.isEmpty
+                              ? DateTime(2100)
+                              : DateFormat('dd-MM-yyyy').parse(_endDate.text));
                       if (startPickedDate != null) {
                         String formattedDate =
                             DateFormat('dd-MM-yyyy').format(startPickedDate);
@@ -129,9 +132,11 @@ class _AddTodoScreenState extends ConsumerState<AddTodoScreen> {
                         DateTime? endPickedDate = await showDatePicker(
                             context: context,
                             initialDate: _endDate.text.isEmpty
-                                ? DateTime.now()
+                                ? DateFormat('dd-MM-yyyy')
+                                    .parse(_startDate.text)
                                 : DateFormat('dd-MM-yyyy').parse(_endDate.text),
-                            firstDate: DateTime.now(),
+                            firstDate:
+                                DateFormat('dd-MM-yyyy').parse(_startDate.text),
                             lastDate: DateTime(2100));
                         if (endPickedDate != null) {
                           String formattedDate =

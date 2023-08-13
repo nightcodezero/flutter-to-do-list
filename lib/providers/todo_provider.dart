@@ -64,36 +64,6 @@ class TodoListNotifier extends StateNotifier<List<Todo>> {
         (index) => Todo.fromMap(maps[index] as Map<String, dynamic>));
   }
 
-  Future<Todo> getById(int id) async {
-    final db = await database;
-    List<Map> maps = await db.query(
-      Todo.tableTodo,
-      columns: [
-        Todo.columnId,
-        Todo.columnTitle,
-        Todo.columnStartDate,
-        Todo.columnEndDate,
-        Todo.columnDone,
-      ],
-      where: '${Todo.columnId} = ?',
-      whereArgs: [id],
-    );
-
-    state = [Todo.fromMap(maps.first as Map<String, dynamic>)];
-
-    if (maps.isEmpty) {
-      return Todo(
-        id: 0,
-        title: '',
-        startDate: '',
-        endDate: '',
-        done: false,
-      );
-    }
-
-    return Todo.fromMap(maps.first as Map<String, dynamic>);
-  }
-
   Future<Todo> create(Todo todo) async {
     final db = await database;
     todo.id = await db.insert(Todo.tableTodo, todo.toMap());
