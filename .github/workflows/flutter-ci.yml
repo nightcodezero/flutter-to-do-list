@@ -12,16 +12,17 @@ jobs:
   build:
     strategy:
       matrix:
-        platform: [ubuntu-latest]
+        platform: [self-hosted]
         java-version: [17]
         android-compile-sdk: [30]
-        android-build-tools: [33.0.2]
+        android-build-tools: [30.0.3]
         android-sdk-tools: [9477386]
         flutter-version: ["3.10.6"]
         channel: ["stable"]
         arch: [x64]
     runs-on: ${{ matrix.platform }}
-    timeout-minutes: 30
+    env:
+      ANDROID_SDK_ROOT: ${{ github.workspace }}/android-sdk-root
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -34,22 +35,10 @@ jobs:
           distribution: "zulu"
           java-version: ${{ matrix.java-version }}
 
-      - name: Setup android SDK
+      - name: Linux - Install dependencies
+        if: runner.os == 'Linux'
         run: |
-          apt-get update && apt-get install -y unzip wget
-          export ANDROID_HOME="${PWD}/android-home"
-          install -d $ANDROID_HOME
-          wget --output-document=$ANDROID_HOME/cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-${{matrix.android-sdk-tools}}_latest.zip
-          pushd $ANDROID_HOME
-          unzip -d cmdline-tools cmdline-tools.zip
-          rm cmdline-tools.zip
-          popd
-          export PATH=$PATH:${ANDROID_HOME}/cmdline-tools/cmdline-tools/bin/
-          sdkmanager --version
-          yes | sdkmanager --sdk_root=${ANDROID_HOME} --licenses || true
-          sdkmanager --sdk_root=${ANDROID_HOME} "platforms;android-${{matrix.android-compile-sdk}}"
-          sdkmanager --sdk_root=${ANDROID_HOME} "platform-tools"
-          sdkmanager --sdk_root=${ANDROID_HOME} "build-tools;${{matrix.android-build-tools}}"
+          sudo apt-get install -y sqlite3 libsqlite3-dev clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-10-dev
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -57,6 +46,7 @@ jobs:
           flutter-version: ${{ matrix.flutter-version }}
           channel: ${{ matrix.channel }}
           architecture: ${{ matrix.arch }}
+          cache: false
 
       # Mark the flutter directory as safe.
       - run: git config --global --add safe.directory /opt/hostedtoolcache/flutter/${{ matrix.channel }}-${{ matrix.flutter-version }}-${{ matrix.arch }}
@@ -76,10 +66,38 @@ jobs:
       # Run widget tests for our flutter project.
       - run: flutter test
 
+      # Run integration tests for our flutter project.
+      - name: Run integration tests
+        timeout-minutes: 15
+        run: |
+          apt-get update && apt-get install -y unzip wget
+
+          install -d $ANDROID_SDK_ROOT
+          wget --no-verbose --output-document=$ANDROID_SDK_ROOT/cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-${{matrix.android-sdk-tools}}_latest.zip
+          unzip -q -d "$ANDROID_SDK_ROOT/cmdline-tools" "$ANDROID_SDK_ROOT/cmdline-tools.zip"
+          mv -T "$ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools" "$ANDROID_SDK_ROOT/cmdline-tools/tools"
+          export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/cmdline-tools/tools/bin:$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/emulator
+
+          sdkmanager --version
+
+          yes | sdkmanager --licenses
+          sdkmanager "platforms;android-${{matrix.android-compile-sdk}}"
+          sdkmanager "platform-tools"
+          sdkmanager "build-tools;${{matrix.android-build-tools}}"
+          sdkmanager --list
+          sdkmanager "system-images;android-${{matrix.android-compile-sdk}};google_apis;x86_64"
+          sdkmanager "emulator"
+          echo "no" | avdmanager create avd --force -n test_emulator -k "system-images;android-${{matrix.android-compile-sdk}};google_apis;x86_64"
+          emulator -list-avds
+          adb start-server
+          echo "Starting emulator..."
+          emulator -avd test_emulator -skin 600x1024 -no-audio -no-window -no-boot-anim -accel on -gpu swiftshader_indirect -debug -all & adb wait-for-device
+          echo "Emulator started successfully."
+          flutter devices
+          flutter test integration_test/ -d emulator-5554
+
       # Build apk.
       - run: flutter build apk
-        env:
-          ANDROID_SDK_ROOT: ${{ github.workspace }}/android-home
 
       # Upload generated apk to the artifacts.
       - name: Upload apk to artifacts

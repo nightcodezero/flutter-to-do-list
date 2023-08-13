@@ -41,6 +41,9 @@ void main() {
     await tester.tap(todoTitle);
     await tester.pumpAndSettle();
 
+    await tester.tap(title);
+    await tester.pumpAndSettle();
+
     await tester.enterText(title, 'Update Integration Test');
     await tester.pumpAndSettle();
 
