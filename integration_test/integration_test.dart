@@ -76,4 +76,14 @@ void main() {
 
     expect(find.text("Completed"), findsOneWidget);
   });
+
+  testWidgets('Delete task', (widgetTester) async {
+    app.main();
+    await widgetTester.pumpAndSettle();
+
+    await widgetTester.drag(find.byType(Dismissible), const Offset(-500, 0));
+    await widgetTester.pumpAndSettle();
+
+    expect(find.text("Update Integration Test"), findsNothing);
+  });
 }

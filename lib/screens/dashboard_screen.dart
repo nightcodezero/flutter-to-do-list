@@ -60,16 +60,35 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                     padding: const EdgeInsets.all(16),
                     itemCount: todoList.length,
                     itemBuilder: (context, index) {
-                      return InkWell(
-                        onTap: () {
-                          router.push(Uri(
-                              path: AddTodoScreen.path,
-                              queryParameters: {
-                                'id': todoList[index].id.toString()
-                              }).toString());
+                      return Dismissible(
+                        key: Key(todoList.elementAt(index).id.toString()),
+                        direction: DismissDirection.endToStart,
+                        onDismissed: (direction) {
+                          ref
+                              .read(todoProvider.notifier)
+                              .delete(todoList.elementAt(index));
                         },
-                        child: TaskCard(
-                          task: todoList.elementAt(index),
+                        background: Container(
+                          color: Colors.red,
+                          padding: const EdgeInsets.all(16.0),
+                          alignment: Alignment.centerRight,
+                          child: const Icon(
+                            Icons.delete,
+                            color: Colors.white,
+                            size: 32,
+                          ),
+                        ),
+                        child: InkWell(
+                          onTap: () {
+                            router.push(Uri(
+                                path: AddTodoScreen.path,
+                                queryParameters: {
+                                  'id': todoList[index].id.toString()
+                                }).toString());
+                          },
+                          child: TaskCard(
+                            task: todoList.elementAt(index),
+                          ),
                         ),
                       );
                     },
