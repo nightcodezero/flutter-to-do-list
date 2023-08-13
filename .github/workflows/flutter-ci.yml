@@ -21,7 +21,6 @@ jobs:
         channel: ["stable"]
         arch: [x64]
     runs-on: ${{ matrix.platform }}
-    timeout-minutes: 30
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -70,7 +69,7 @@ jobs:
 
       # Run integration tests for our flutter project.
       - name: Run integration tests
-        timeout-minutes: 15
+        timeout-minutes: 30
         run: |
           apt-get update && apt-get install -y unzip wget
 
@@ -79,7 +78,7 @@ jobs:
           wget --no-verbose --output-document=$ANDROID_HOME/cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-${{matrix.android-sdk-tools}}_latest.zip
           unzip -q -d "$ANDROID_HOME/cmdline-tools" "$ANDROID_HOME/cmdline-tools.zip"
           mv -T "$ANDROID_HOME/cmdline-tools/cmdline-tools" "$ANDROID_HOME/cmdline-tools/tools"
-          export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/cmdline-tools/tools/bin
+          export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/cmdline-tools/tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator
 
           sdkmanager --version
 
@@ -91,9 +90,9 @@ jobs:
           sdkmanager "system-images;android-${{matrix.android-compile-sdk}};google_apis;x86_64"
           sdkmanager "emulator"
           echo "no" | avdmanager create avd --force -n test_emulator -k "system-images;android-${{matrix.android-compile-sdk}};google_apis;x86_64"
-          $ANDROID_HOME/emulator/emulator -list-avds
-          $ANDROID_HOME/platform-tools/adb start-server
-          $ANDROID_HOME/emulator/emulator -avd test_emulator -no-audio -no-window -no-boot-anim -accel on -gpu swiftshader_indirect &
+          emulator -list-avds
+          adb start-server
+          emulator -avd test_emulator -no-audio -no-window -no-boot-anim -accel on -gpu swiftshader_indirect &
           flutter test integration_test/
 
       # Upload generated apk to the artifacts.
