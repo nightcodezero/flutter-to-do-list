@@ -64,9 +64,6 @@ jobs:
       # Run widget tests for our flutter project.
       - run: flutter test
 
-      # List all the available devices.
-      - run: flutter devices
-
       # Run integration tests for our flutter project.
       - name: Run integration tests
         timeout-minutes: 30
@@ -95,7 +92,13 @@ jobs:
           echo "Starting emulator..."
           emulator -avd test_emulator -skin 600x1024 -no-audio -no-window -no-boot-anim -accel on -gpu swiftshader_indirect -debug -all & adb wait-for-device
           echo "Emulator started successfully."
+          flutter devices
           flutter test integration_test/
+
+      # Build apk.
+      - run: flutter build apk
+        env:
+          ANDROID_SDK_ROOT: ${{ github.workspace }}/android-home
 
       # Upload generated apk to the artifacts.
       - name: Upload apk to artifacts
