@@ -93,6 +93,9 @@ jobs:
           emulator -list-avds
           adb start-server
           emulator -avd test_emulator -no-audio -no-window -no-boot-anim -accel on -gpu swiftshader_indirect &
+          echo "Waiting for emulator to start..."
+          adb wait-for-device
+          echo "Emulator started successfully."
           flutter test integration_test/
 
       # Upload generated apk to the artifacts.
