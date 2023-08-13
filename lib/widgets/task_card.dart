@@ -19,22 +19,35 @@ class _TaskCardState extends ConsumerState<TaskCard> {
     return DateFormat("yyyy-MM-dd").format(dateTime);
   }
 
+  int _hours = 0;
+  int _minutes = 0;
+
   @override
   Widget build(BuildContext context) {
-    DateTime endDateTime = DateTime.parse(convertDate(widget.task.endDate));
-    Duration difference = endDateTime
-        .add(const Duration(hours: 23, minutes: 59))
-        .difference(DateTime.now());
+    final isTaskStarted = DateTime.parse(convertDate(widget.task.startDate))
+        .isBefore(DateTime.now());
 
-    int hours = difference.inHours;
-    int minutes = difference.inMinutes.remainder(60);
+    if (isTaskStarted) {
+      DateTime endDateTime = DateTime.parse(convertDate(widget.task.endDate));
+      Duration difference = endDateTime
+          .add(const Duration(hours: 23, minutes: 59))
+          .difference(DateTime.now());
 
-    if (hours < 0) {
-      hours = 0;
+      _hours = difference.inHours;
+      _minutes = difference.inMinutes.remainder(60);
+
+      if (_hours < 0) {
+        _hours = 0;
+      }
+
+      if (_minutes < 0) {
+        _minutes = 0;
+      }
     }
 
-    if (minutes < 0) {
-      minutes = 0;
+    if (widget.task.done) {
+      _hours = 0;
+      _minutes = 0;
     }
 
     return Container(
@@ -101,7 +114,7 @@ class _TaskCardState extends ConsumerState<TaskCard> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            "$hours hrs $minutes min",
+                            "$_hours hrs $_minutes min",
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ],
