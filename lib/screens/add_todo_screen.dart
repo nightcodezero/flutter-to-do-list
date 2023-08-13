@@ -126,18 +126,13 @@ class _AddTodoScreenState extends ConsumerState<AddTodoScreen> {
                     ),
                     onTap: () async {
                       if (_startDate.text.isNotEmpty) {
-                        String dateTime = _startDate.text;
-                        DateFormat inputFormat = DateFormat('dd-MM-yyyy');
-                        DateTime input = inputFormat.parse(dateTime);
-
                         DateTime? endPickedDate = await showDatePicker(
-                          context: context,
-                          initialDate: _endDate.text.isEmpty
-                              ? input.add(const Duration(days: 1))
-                              : DateFormat('dd-MM-yyyy').parse(_endDate.text),
-                          firstDate: input.add(const Duration(days: 1)),
-                          lastDate: DateTime(2100),
-                        );
+                            context: context,
+                            initialDate: _endDate.text.isEmpty
+                                ? DateTime.now()
+                                : DateFormat('dd-MM-yyyy').parse(_endDate.text),
+                            firstDate: DateTime.now(),
+                            lastDate: DateTime(2100));
                         if (endPickedDate != null) {
                           String formattedDate =
                               DateFormat('dd-MM-yyyy').format(endPickedDate);
