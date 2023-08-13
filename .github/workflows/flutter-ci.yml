@@ -79,7 +79,6 @@ jobs:
 
           sdkmanager --version
 
-          yes | sdkmanager --licenses
           sdkmanager "platforms;android-${{matrix.android-compile-sdk}}"
           sdkmanager "platform-tools"
           sdkmanager "build-tools;${{matrix.android-build-tools}}"
@@ -94,12 +93,10 @@ jobs:
           echo "Emulator started successfully."
           flutter devices
           flutter test integration_test/ -d emulator-5554
+          yes | sdkmanager --licenses
 
       # Build apk.
-      - name: Build apk
-        run: |
-          yes | sdkmanager --licenses
-          flutter build apk
+      - run: flutter build apk
         env:
           ANDROID_SDK_ROOT: ${{ github.workspace }}/android-home
 
