@@ -21,8 +21,6 @@ jobs:
         channel: ["stable"]
         arch: [x64]
     runs-on: ${{ matrix.platform }}
-    env:
-      ANDROID_HOME: ${{ github.workspace }}/android-sdk-root
     timeout-minutes: 30
     steps:
       - name: Checkout repository
@@ -35,32 +33,6 @@ jobs:
         with:
           distribution: "zulu"
           java-version: ${{ matrix.java-version }}
-
-      - name: Setup android SDK
-        timeout-minutes: 15
-        run: |
-          apt-get update && apt-get install -y unzip wget
-
-          echo "$ANDROID_HOME/cmdline-tools/tools/bin" >> $GITHUB_PATH
-          echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> $GITHUB_PATH
-          install -d $ANDROID_HOME
-          wget --no-verbose --output-document=$ANDROID_HOME/cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-${{matrix.android-sdk-tools}}_latest.zip
-          unzip -q -d "$ANDROID_HOME/cmdline-tools" "$ANDROID_HOME/cmdline-tools.zip"
-          mv -T "$ANDROID_HOME/cmdline-tools/cmdline-tools" "$ANDROID_HOME/cmdline-tools/tools"
-
-          sdkmanager --version
-          yes | sdkmanager --licenses > /dev/null || true
-          sdkmanager "platforms;android-${{matrix.android-compile-sdk}}"
-          sdkmanager "platform-tools"
-          echo "$ANDROID_HOME/platform-tools" >> $GITHUB_PATH
-          sdkmanager "build-tools;${{matrix.android-build-tools}}"
-          echo "$ANDROID_HOME/build-tools/${{matrix.android-build-tools}}" >> $GITHUB_PATH
-          sdkmanager --list --verbose
-          sdkmanager "system-images;android-${{matrix.android-compile-sdk}};google_apis;x86_64"
-          sdkmanager "emulator"
-          echo "$ANDROID_HOME/emulator" >> $GITHUB_PATH
-          echo "no" | avdmanager create avd --force -n test_emulator -k "system-images;android-${{matrix.android-compile-sdk}};google_apis;x86_64"
-          emulator -list-avds
 
       - name: Linux - Install dependencies
         if: runner.os == 'Linux'
@@ -98,9 +70,30 @@ jobs:
 
       # Run integration tests for our flutter project.
       - name: Run integration tests
+        timeout-minutes: 15
         run: |
-          adb start-server
-          emulator -avd test_emulator -no-audio -no-window -no-boot-anim -accel on -gpu swiftshader_indirect &
+          apt-get update && apt-get install -y unzip wget
+
+          export ANDROID_HOME="${PWD}/android-sdk-root"
+          install -d $ANDROID_HOME
+          wget --no-verbose --output-document=$ANDROID_HOME/cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-${{matrix.android-sdk-tools}}_latest.zip
+          unzip -q -d "$ANDROID_HOME/cmdline-tools" "$ANDROID_HOME/cmdline-tools.zip"
+          mv -T "$ANDROID_HOME/cmdline-tools/cmdline-tools" "$ANDROID_HOME/cmdline-tools/tools"
+          export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/cmdline-tools/tools/bin
+
+          sdkmanager --version
+
+          yes | sdkmanager --licenses > /dev/null || true
+          sdkmanager "platforms;android-${{matrix.android-compile-sdk}}"
+          sdkmanager "platform-tools"
+          sdkmanager "build-tools;${{matrix.android-build-tools}}"
+          sdkmanager --list --verbose
+          sdkmanager "system-images;android-${{matrix.android-compile-sdk}};google_apis;x86_64"
+          sdkmanager "emulator"
+          echo "no" | avdmanager create avd --force -n test_emulator -k "system-images;android-${{matrix.android-compile-sdk}};google_apis;x86_64"
+          $ANDROID_HOME/emulator/emulator -list-avds
+          $ANDROID_HOME/platform-tools/adb start-server
+          $ANDROID_HOME/emulator/emulator -avd test_emulator -no-audio -no-window -no-boot-anim -accel on -gpu swiftshader_indirect &
           flutter test integration_test/
 
       # Upload generated apk to the artifacts.
