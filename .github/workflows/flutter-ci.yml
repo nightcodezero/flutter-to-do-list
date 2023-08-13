@@ -66,7 +66,7 @@ jobs:
 
       # Run integration tests for our flutter project.
       - name: Run integration tests
-        timeout-minutes: 30
+        timeout-minutes: 15
         run: |
           apt-get update && apt-get install -y unzip wget
 
@@ -79,10 +79,11 @@ jobs:
 
           sdkmanager --version
 
+          yes | sdkmanager --licenses
           sdkmanager "platforms;android-${{matrix.android-compile-sdk}}"
           sdkmanager "platform-tools"
           sdkmanager "build-tools;${{matrix.android-build-tools}}"
-          sdkmanager --list --verbose
+          sdkmanager --list
           sdkmanager "system-images;android-${{matrix.android-compile-sdk}};google_apis;x86_64"
           sdkmanager "emulator"
           echo "no" | avdmanager create avd --force -n test_emulator -k "system-images;android-${{matrix.android-compile-sdk}};google_apis;x86_64"
