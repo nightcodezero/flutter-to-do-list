@@ -15,7 +15,7 @@ jobs:
         platform: [self-hosted]
         java-version: [17]
         android-compile-sdk: [30]
-        android-build-tools: [33.0.2]
+        android-build-tools: [30.0.3]
         android-sdk-tools: [9477386]
         flutter-version: ["3.10.6"]
         channel: ["stable"]
@@ -92,9 +92,8 @@ jobs:
           echo "no" | avdmanager create avd --force -n test_emulator -k "system-images;android-${{matrix.android-compile-sdk}};google_apis;x86_64"
           emulator -list-avds
           adb start-server
-          emulator -avd test_emulator -no-audio -no-window -no-boot-anim -accel on -gpu swiftshader_indirect &
-          echo "Waiting for emulator to start..."
-          adb wait-for-device
+          echo "Starting emulator..."
+          emulator -avd test_emulator -skin 600x1024 -no-audio -no-window -no-boot-anim -accel on -gpu swiftshader_indirect -debug -all & adb wait-for-device
           echo "Emulator started successfully."
           flutter test integration_test/
 
