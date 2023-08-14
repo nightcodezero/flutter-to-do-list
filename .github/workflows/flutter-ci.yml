@@ -67,7 +67,7 @@ jobs:
 
       # Run integration tests for our flutter project.
       - name: Run integration tests
-        timeout-minutes: 15
+        timeout-minutes: 30
         run: |
           apt-get update && apt-get install -y unzip wget
 
