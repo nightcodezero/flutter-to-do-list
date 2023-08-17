@@ -58,8 +58,9 @@ jobs:
       - run: flutter analyze .
 
       # Run widget tests for our flutter project.
-      - run: |
-          apt-get install sqlite3
+      - name: Run widget tests
+        run: |
+          apt-get install -y sqlite3
           flutter test
 
       # Run integration tests for our flutter project.
