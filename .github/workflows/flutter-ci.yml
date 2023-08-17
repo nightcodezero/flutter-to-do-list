@@ -69,8 +69,8 @@ jobs:
       - name: Run integration tests
         timeout-minutes: 30
         run: |
-          apt-get update && apt-get install -y unzip wget
-
+          apt-get update && apt-get install -y unzip wget cpu-checker
+          kvm-ok
           install -d $ANDROID_SDK_ROOT
           wget --no-verbose --output-document=$ANDROID_SDK_ROOT/cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-${{matrix.android-sdk-tools}}_latest.zip
           unzip -q -d "$ANDROID_SDK_ROOT/cmdline-tools" "$ANDROID_SDK_ROOT/cmdline-tools.zip"
@@ -84,16 +84,16 @@ jobs:
           sdkmanager "platform-tools"
           sdkmanager "build-tools;${{matrix.android-build-tools}}"
           sdkmanager --list
-          sdkmanager "system-images;android-${{matrix.android-compile-sdk}};google_apis;x86_64"
+          sdkmanager "system-images;android-${{matrix.android-compile-sdk}};google_apis;arm64-v8a"
           sdkmanager "emulator"
-          echo "no" | avdmanager create avd --force -n test_emulator -k "system-images;android-${{matrix.android-compile-sdk}};google_apis;x86_64"
+          echo "no" | avdmanager create avd --force -n test_emulator -k "system-images;android-${{matrix.android-compile-sdk}};google_apis;arm64-v8a"
           emulator -list-avds
           adb start-server
           echo "Starting emulator..."
           emulator -avd test_emulator -skin 600x1024 -no-audio -no-window -no-boot-anim -accel on -gpu swiftshader_indirect -debug -all & adb wait-for-device
           echo "Emulator started successfully."
           flutter devices
-          flutter test integration_test/ -d emulator-5554
+          flutter test integration_test -d emulator-5554
 
       # Build apk.
       - run: flutter build apk
