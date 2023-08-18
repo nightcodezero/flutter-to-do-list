@@ -14,12 +14,13 @@ jobs:
       matrix:
         platform: [self-hosted]
         java-version: [17]
-        android-compile-sdk: [30]
-        android-build-tools: [30.0.3]
-        android-sdk-tools: [9477386]
         flutter-version: ["3.10.6"]
         channel: ["stable"]
-        arch: [x64]
+        api-level: [33]
+        android-build-tools: [30.0.3]
+        android-sdk-tools: [9477386]
+        arch: [x86_64]
+        tag: [google_apis]
     runs-on: ${{ matrix.platform }}
     env:
       ANDROID_SDK_ROOT: ${{ github.workspace }}/android-sdk-root
@@ -35,20 +36,15 @@ jobs:
           distribution: "zulu"
           java-version: ${{ matrix.java-version }}
 
-      - name: Linux - Install dependencies
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get install -y sqlite3 libsqlite3-dev
-
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
           channel: ${{ matrix.channel }}
-          architecture: ${{ matrix.arch }}
+          architecture: x64
 
       # Mark the flutter directory as safe.
-      - run: git config --global --add safe.directory /opt/hostedtoolcache/flutter/${{ matrix.channel }}-${{ matrix.flutter-version }}-${{ matrix.arch }}
+      - run: git config --global --add safe.directory /opt/hostedtoolcache/flutter/${{ matrix.channel }}-${{ matrix.flutter-version }}-x64
 
       # Print installed flutter version.
       - run: flutter --version
@@ -63,7 +59,10 @@ jobs:
       - run: flutter analyze .
 
       # Run widget tests for our flutter project.
-      - run: flutter test
+      - name: Run widget tests
+        run: |
+          apt-get install -y sqlite3 libsqlite3-dev
+          flutter test
 
       # Run integration tests for our flutter project.
       - name: Run integration tests
@@ -72,7 +71,7 @@ jobs:
           apt-get update && apt-get install -y unzip wget cpu-checker
           kvm-ok
           install -d $ANDROID_SDK_ROOT
-          wget --no-verbose --output-document=$ANDROID_SDK_ROOT/cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-${{matrix.android-sdk-tools}}_latest.zip
+          wget --no-verbose --output-document=$ANDROID_SDK_ROOT/cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-${{ matrix.android-sdk-tools }}_latest.zip
           unzip -q -d "$ANDROID_SDK_ROOT/cmdline-tools" "$ANDROID_SDK_ROOT/cmdline-tools.zip"
           mv -T "$ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools" "$ANDROID_SDK_ROOT/cmdline-tools/tools"
           export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/cmdline-tools/tools/bin:$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/emulator
@@ -80,13 +79,13 @@ jobs:
           sdkmanager --version
 
           yes | sdkmanager --licenses
-          sdkmanager "platforms;android-${{matrix.android-compile-sdk}}"
+          sdkmanager "platforms;android-${{ matrix.api-level }}"
           sdkmanager "platform-tools"
-          sdkmanager "build-tools;${{matrix.android-build-tools}}"
+          sdkmanager "build-tools;${{ matrix.android-build-tools }}"
           sdkmanager --list
-          sdkmanager "system-images;android-${{matrix.android-compile-sdk}};google_apis;arm64-v8a"
+          sdkmanager "system-images;android-${{ matrix.api-level }};${{ matrix.tag }};${{ matrix.arch }}"
           sdkmanager "emulator"
-          echo "no" | avdmanager create avd --force -n test_emulator -k "system-images;android-${{matrix.android-compile-sdk}};google_apis;arm64-v8a"
+          echo "no" | avdmanager create avd --force -n test_emulator -k "system-images;android-${{ matrix.api-level }};${{ matrix.tag }};${{ matrix.arch }}"
           emulator -list-avds
           adb start-server
           echo "Starting emulator..."
