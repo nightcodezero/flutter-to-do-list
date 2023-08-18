@@ -14,12 +14,13 @@ jobs:
       matrix:
         platform: [self-hosted]
         java-version: [17]
-        android-compile-sdk: [33]
-        android-build-tools: [30.0.3]
-        android-sdk-tools: [9477386]
         flutter-version: ["3.10.6"]
         channel: ["stable"]
+        api-level: [33]
+        android-build-tools: [30.0.3]
+        android-sdk-tools: [9477386]
         arch: [x86_64]
+        tag: [google_apis]
     runs-on: ${{ matrix.platform }}
     env:
       ANDROID_SDK_ROOT: ${{ github.workspace }}/android-sdk-root
@@ -78,13 +79,13 @@ jobs:
           sdkmanager --version
 
           yes | sdkmanager --licenses
-          sdkmanager "platforms;android-${{ matrix.android-compile-sdk }}"
+          sdkmanager "platforms;android-${{ matrix.api-level }}"
           sdkmanager "platform-tools"
           sdkmanager "build-tools;${{ matrix.android-build-tools }}"
           sdkmanager --list
-          sdkmanager "system-images;android-${{ matrix.android-compile-sdk }};google_apis;${{ matrix.arch }}"
+          sdkmanager "system-images;android-${{ matrix.api-level }};${{ matrix.tag }};${{ matrix.arch }}"
           sdkmanager "emulator"
-          echo "no" | avdmanager create avd --force -n test_emulator -k "system-images;android-${{ matrix.android-compile-sdk }};google_apis;${{ matrix.arch }}"
+          echo "no" | avdmanager create avd --force -n test_emulator -k "system-images;android-${{ matrix.api-level }};${{ matrix.tag }};${{ matrix.arch }}"
           emulator -list-avds
           adb start-server
           echo "Starting emulator..."
